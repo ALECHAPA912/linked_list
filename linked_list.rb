@@ -53,26 +53,40 @@ class LinkedList
     current_node = @head
     current_index = 0
     while current_node != nil && index != current_index
-      idx += 1
+      current_index += 1
       current_node = current_node.next_node
     end
     current_node
   end
 
   def pop
-    current_node = @head
-    (self.size - 1).times do
-      current_node = current_node.next_node
+    return if self.size == 0
+    if self.size == 1
+      @head = nil
+      @tail = nil
+    elsif self.size == 2
+      @head.next_node = nil
+      @tail = @head
+    else
+      current_node = @head
+      last_node = @head
+      while current_node != nil
+        if current_node.next_node == nil
+          last_node.next_node = nil
+          return
+        end
+        last_node = current_node
+        current_node = current_node.next_node
+      end
     end
-    @tail = current_node
   end
 
   def contains?(value)
     current_node = @head
-    while current_node != nil && value != current_node.value
+    while current_node != nil
+      return true if current_node.value == value
       current_node = current_node.next_node
     end
-    return true if current_node.value == value
     false
   end
 
@@ -88,15 +102,22 @@ class LinkedList
   end
 
   def insert_at(value, index)
-    current_node = @head
-    last_node = @head
-    current_index = 0
-
+    return if index < 0
     if index == 0
       @head = Node.new(value, @head)
       return
     end
-    
+    if index > self.size
+      new_node = Node.new(value)
+      @tail.next_node = new_node
+      @tail = new_node
+      return
+    end
+  
+    current_node = @head
+    last_node = @head
+    current_index = 0
+
     while current_node != nil && current_index != index
       last_node = current_node
       current_node = current_node.next_node
@@ -105,10 +126,6 @@ class LinkedList
     
     new_node = Node.new(value, current_node)
     last_node.next_node = new_node
-
-    if index == self.size-1
-      @tail = new_node
-    end
   end
 
   def remove_at(index)
